@@ -9,6 +9,7 @@ export interface Loan {
   reviewedBy?: string;
   approvedAt?: Date;
   approvedBy?: string;
+  comments?: string;
 }
 
 export interface User {
