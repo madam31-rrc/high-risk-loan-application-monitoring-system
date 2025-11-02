@@ -80,7 +80,7 @@ export const loanController = {
       const loanIndex = loans.findIndex(loan => loan.id === id);
 
       if (loanIndex === -1) {
-        return res.status(404).json({ error: 'Loan not found' });
+        return res.status(404).json({ error: 'Loan application not found' });
       }
 
       const loan = loans[loanIndex];
@@ -92,7 +92,6 @@ export const loanController = {
         });
       }
 
-      // Update loan
       loans[loanIndex] = {
         ...loan,
         status: status as 'reviewed' | 'rejected',
@@ -102,7 +101,7 @@ export const loanController = {
       };
 
       return res.status(200).json({
-        message: 'Loan reviewed successfully',
+        message: 'Loan application reviewed successfully',
         loan: loans[loanIndex]
       });
     } catch (error) {
@@ -131,7 +130,6 @@ export const loanController = {
         });
       }
 
-      // Update loan
       loans[loanIndex] = {
         ...loan,
         status: 'approved',
