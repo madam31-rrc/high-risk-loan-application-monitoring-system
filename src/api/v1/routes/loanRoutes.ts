@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { loanController } from '../controllers/loanControllers';
 
-const router = Router();;
+const router = Router();
 
 router.post('/', loanController.createLoan);
 
