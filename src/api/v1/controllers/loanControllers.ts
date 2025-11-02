@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { Loan } from '../types/loan.types';
-import { v4 as uuidv4 } from 'uuid';
 
 let loans: Loan[] = [];
 
@@ -9,7 +8,6 @@ export const loanController = {
     try {
       const { amount, purpose, userId } = req.body;
 
-      // Validation
       if (!amount || !purpose) {
         return res.status(400).json({ 
           error: 'Missing required fields',
@@ -22,7 +20,7 @@ export const loanController = {
       }
 
       const newLoan: Loan = {
-        id: uuidv4(),
+        id: "loan_" + (loans.length + 1),
         userId: userId,
         amount,
         purpose,
