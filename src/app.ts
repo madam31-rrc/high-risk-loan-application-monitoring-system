@@ -1,26 +1,53 @@
-import express from "express";
-import morgan from "morgan";
-import loanRoutes from "./api/v1/routes/loanRoutes";
-import { Server } from "http";
+import express, { Application, Request, Response } from 'express';
+import { config } from './config/environment';
+import { morganMiddleware } from './api/v1/utils/logger';
+import { HTTP_STATUS } from './constants/httpStatus';
+import { Messages } from './constants/messages';
+import apiV1Routes from './api/v1/routes/loanRoutes';
 
-const PORT = parseInt(process.env.PORT as string) || 3000;
-const app = express();
+const app: Application = express();
 
+// Middleware
 app.use(express.json());
-app.use(morgan("combined"));
+app.use(express.urlencoded({ extended: true }));
+app.use(morganMiddleware);
 
-app.get("/health", (_req, res) => res.status(200).send("Server is healthy"));
-
-app.use("/api/v1/loans", loanRoutes);
-
-app.use((err: any, _req: express.Request, res: express.Response, _next: any) => {
-  console.error(err);
-  const status = err?.status || 500;
-  res.status(status).json({ error: err?.message ?? "Internal server error" });
+// Health check endpoint
+app.get('/health', (_req: Request, res: Response) => {
+  res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: 'Server is healthy',
+    timestamp: new Date().toISOString()
+  });
 });
 
-const server: Server = app.listen(PORT, '0.0.0.0', 0, () => {
-    console.log(`Server is running on port ${PORT}`);
+// API routes
+app.use(`/api/${config.apiVersion}`, apiV1Routes);
+
+// Root endpoint
+app.get('/', (_req: Request, res: Response) => {
+  res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: Messages.SERVER_RUNNING,
+    version: config.apiVersion,
+    environment: config.nodeEnv
+  });
 });
 
-export  {app, server};
+// 404 handler
+app.use((_req: Request, res: Response) => {
+  res.status(HTTP_STATUS.NOT_FOUND).json({
+    success: false,
+    message: 'Route not found'
+  });
+});
+
+// Start server
+const PORT = config.port;
+app.listen(PORT, () => {
+  console.log(`PiXELL-River Financial API running on port ${PORT}`);
+  console.log(`Environment: ${config.nodeEnv}`);
+  console.log(`API Version: ${config.apiVersion}`);
+});
+
+export default app;
