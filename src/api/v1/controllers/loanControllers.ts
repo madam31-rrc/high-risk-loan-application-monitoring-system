@@ -6,7 +6,7 @@ let loans: Loan[] = [];
 export const loanController = {
   createLoan: async (req: Request, res: Response) => {
     try {
-      const { amount, purpose, userId } = req.body;
+      const { amount, purpose } = req.body;
 
       if (!amount || !purpose) {
         return res.status(400).json({ 
@@ -21,7 +21,7 @@ export const loanController = {
 
       const newLoan: Loan = {
         id: "loan_" + (loans.length + 1),
-        userId: userId,
+        userId: res.locals.userId,
         amount,
         purpose,
         status: 'pending',
@@ -67,7 +67,7 @@ export const loanController = {
   reviewLoan: async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const { status, comments, userId } = req.body;
+      const { status, comments } = req.body;
 
       // Validation
       if (!status || !['reviewed', 'rejected'].includes(status)) {
@@ -96,7 +96,7 @@ export const loanController = {
         ...loan,
         status: status as 'reviewed' | 'rejected',
         reviewedAt: new Date(),
-        reviewedBy: userId,
+        reviewedBy: res.locals.userId,
         ...(comments && { comments })
       };
 
@@ -113,7 +113,7 @@ export const loanController = {
   approveLoan: async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const { comments, userId } = req.body;
+      const { comments } = req.body;
 
       const loanIndex = loans.findIndex(loan => loan.id === id);
 
@@ -134,7 +134,7 @@ export const loanController = {
         ...loan,
         status: 'approved',
         approvedAt: new Date(),
-        approvedBy: userId,
+        approvedBy: res.locals.userId,
         ...(comments && { comments })
       };
 
