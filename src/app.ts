@@ -4,12 +4,14 @@ import { morganMiddleware } from './api/v1/utils/logger';
 import { config } from './config/environment';
 import { HTTP_STATUS } from './constants/httpStatus';
 import { Messages } from './constants/messages';
+import errorHandler from './api/v1/middleware/errorHandler';
 
 const app: Application = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morganMiddleware);
+app.use(errorHandler);
 
 app.get('/health', (_req: Request, res: Response) => {
   res.status(HTTP_STATUS.OK).json({
