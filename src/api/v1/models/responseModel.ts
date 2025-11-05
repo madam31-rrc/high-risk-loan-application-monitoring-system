@@ -47,3 +47,4 @@ export type ErrorMiddlewareFunction = (
   res: Response,
   next: NextFunction
 ) => void | Promise<void>;
+
